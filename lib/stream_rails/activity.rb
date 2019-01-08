@@ -31,7 +31,7 @@ module StreamRails
     end
 
     def activity_owner_id
-      activity_actor.id
+      activity_actor.present? ? activity_actor.id : nil
     end
 
     def activity_actor

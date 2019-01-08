@@ -23,6 +23,7 @@ module StreamRails
     end
 
     def get_feed(feed_type, user_id)
+      return unless feed_type && user_id
       @client.feed(feed_type, user_id)
     end
 
@@ -31,7 +32,7 @@ module StreamRails
       target_feed = get_user_feed(target_id)
       @news_feeds.each do |_, feed|
         news_feed = get_feed(feed, user_id)
-        news_feed.follow(target_feed.slug, target_feed.user_id)
+        news_feed.follow(target_feed.slug, target_feed.user_id) if news_feed
       end
     end
 
@@ -40,7 +41,7 @@ module StreamRails
       target_feed = get_user_feed(target_id)
       @news_feeds.each do |_, feed|
         news_feed = get_feed(feed, user_id)
-        news_feed.unfollow(target_feed.slug, target_feed.user_id)
+        news_feed.unfollow(target_feed.slug, target_feed.user_id) if news_feed
       end
     end
 
@@ -52,13 +53,13 @@ module StreamRails
       return unless StreamRails.enabled? && instance.activity_should_sync?
       activity = instance.create_activity
       feed = get_owner_feed(instance)
-      feed.add_activity(activity)
+      feed.add_activity(activity) if feed
     end
 
     def destroyed_activity(instance)
       return unless StreamRails.enabled?
       feed = get_owner_feed(instance)
-      feed.remove(instance.activity_foreign_id, true)
+      feed.remove(instance.activity_foreign_id, true) if feed
     end
   end
 end
